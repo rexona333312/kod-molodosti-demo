@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --ease-lux: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  /* Lock scroll while the 3D portal overlay is active */
+  body.portal-locked {
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  ::selection {
+    background: #0f5d49;
+    color: #f6f4ef;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display), Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+
+  :focus-visible {
+    outline: 2px solid #0f5d49;
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+}
+
+@layer components {
+  .label-eyebrow {
+    @apply text-[0.72rem] uppercase tracking-label text-emerald font-medium;
+  }
+
+  .lux-link {
+    @apply relative inline-block text-ink/80 transition-colors duration-300 hover:text-ink;
+  }
+  .lux-link::after {
+    content: "";
+    @apply absolute left-0 -bottom-1 h-px w-0 bg-emerald transition-[width] duration-500;
+    transition-timing-function: var(--ease-lux);
+  }
+  .lux-link:hover::after {
+    @apply w-full;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-emerald px-7 py-3.5
+           text-sm uppercase tracking-label text-cream cursor-pointer
+           transition-all duration-300 hover:bg-emerald-deep;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-ink/20 px-7 py-3.5
+           text-sm uppercase tracking-label text-ink cursor-pointer
+           transition-all duration-300 hover:border-emerald hover:text-emerald;
+  }
+
+  .field-input {
+    @apply w-full bg-transparent border-b border-line px-0 py-3 text-ink
+           placeholder:text-muted/60 focus:border-emerald focus:outline-none
+           transition-colors duration-300;
+  }
+}
+
+/* 3D scene helpers */
+.scene-perspective {
+  perspective: 1400px;
+  perspective-origin: 50% 45%;
+}
+.preserve-3d {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Reveal-on-scroll baseline (GSAP toggles .is-visible) */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 1s var(--ease-lux), transform 1s var(--ease-lux);
+}
+
+/* intro caret blink (v2) */
+@keyframes caret-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+.caret {
+  animation: caret-blink 1s steps(1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
