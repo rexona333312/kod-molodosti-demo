@@ -1,31 +1,35 @@
-import { contacts } from "@/lib/content";
+"use client";
+
 import { MapPin, Phone, Mail, Clock } from "./Icons";
 import { MapEmbed } from "./MapEmbed";
+import { useDict } from "./LocaleProvider";
 
 export function Contacts() {
+  const { contacts, ui } = useDict();
   return (
     <section id="contacts" className="border-t border-line py-24 md:py-36">
       <div className="mx-auto max-w-site px-5 md:px-10">
         <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-5">
-            <p className="reveal label-eyebrow">Контакты</p>
+            <p className="reveal label-eyebrow">{ui.contacts.eyebrow}</p>
             <h2 className="reveal mt-6 font-display text-[clamp(2.2rem,5vw,3.6rem)] leading-[1.05] text-ink">
-              Ждём вас
-              <br />в&nbsp;Иванове
+              {ui.contacts.titleTop}
+              <br />
+              {ui.contacts.titleBottom}
             </h2>
 
             <ul className="reveal mt-10 space-y-7">
               <li className="flex gap-4">
                 <MapPin className="mt-1 h-5 w-5 shrink-0 text-emerald" />
                 <div>
-                  <p className="text-xs uppercase tracking-label text-muted">Адрес</p>
+                  <p className="text-xs uppercase tracking-label text-muted">{ui.contacts.labelAddress}</p>
                   <p className="mt-1 text-lg text-ink">{contacts.address}</p>
                 </div>
               </li>
               <li className="flex gap-4">
                 <Phone className="mt-1 h-5 w-5 shrink-0 text-emerald" />
                 <div>
-                  <p className="text-xs uppercase tracking-label text-muted">Телефон</p>
+                  <p className="text-xs uppercase tracking-label text-muted">{ui.contacts.labelPhone}</p>
                   <a
                     href={contacts.phoneHref}
                     className="mt-1 block text-lg text-ink transition-colors hover:text-emerald"
@@ -37,7 +41,7 @@ export function Contacts() {
               <li className="flex gap-4">
                 <Mail className="mt-1 h-5 w-5 shrink-0 text-emerald" />
                 <div>
-                  <p className="text-xs uppercase tracking-label text-muted">Почта</p>
+                  <p className="text-xs uppercase tracking-label text-muted">{ui.contacts.labelEmail}</p>
                   <a
                     href={`mailto:${contacts.email}`}
                     className="mt-1 block break-all text-lg text-ink transition-colors hover:text-emerald"
@@ -49,7 +53,7 @@ export function Contacts() {
               <li className="flex gap-4">
                 <Clock className="mt-1 h-5 w-5 shrink-0 text-emerald" />
                 <div>
-                  <p className="text-xs uppercase tracking-label text-muted">Часы работы</p>
+                  <p className="text-xs uppercase tracking-label text-muted">{ui.contacts.labelHours}</p>
                   {contacts.hours.map((h) => (
                     <p key={h.days} className="mt-1 text-lg text-ink">
                       <span className="text-muted">{h.days}</span> &nbsp;{h.time}

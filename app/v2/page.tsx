@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { SiteExperienceV2 } from "@/components/v2/SiteExperienceV2";
+import { JsonLd } from "@/components/JsonLd";
+import { ruClinicSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: "Клиника медицинской косметологии в Иванове",
@@ -9,5 +11,10 @@ export const metadata: Metadata = {
 };
 
 export default function V2() {
-  return <SiteExperienceV2 />;
+  return (
+    <>
+      <JsonLd data={ruClinicSchema} />
+      <SiteExperienceV2 locale="ru" />
+    </>
+  );
 }

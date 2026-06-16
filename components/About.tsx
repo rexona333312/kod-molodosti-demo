@@ -1,19 +1,20 @@
-import { advantages, brand } from "@/lib/content";
+"use client";
+
+import { useDict } from "./LocaleProvider";
 
 export function About() {
+  const { advantages, brand, ui } = useDict();
   return (
     <section id="about" className="border-t border-line bg-cream py-24 md:py-36">
       <div className="mx-auto max-w-site px-5 md:px-10">
         <div className="grid gap-14 lg:grid-cols-12">
           <div className="lg:col-span-5">
-            <p className="reveal label-eyebrow">О клинике</p>
+            <p className="reveal label-eyebrow">{ui.about.eyebrow}</p>
             <h2 className="reveal mt-6 font-display text-[clamp(2.2rem,5vw,3.6rem)] leading-[1.05] text-ink">
-              Медицина в&nbsp;основе красоты
+              {ui.about.title}
             </h2>
             <p className="reveal mt-7 text-lg leading-relaxed text-muted">
-              «{brand.name}» — официальное медицинское учреждение в Иванове.
-              С {brand.since} года мы объединяем экспертизу врачей,
-              сертифицированные препараты и технологии экспертного класса.
+              {ui.about.body}
             </p>
             <p className="reveal mt-5 text-sm leading-relaxed text-muted/90">
               {brand.legalName}. {brand.license}.

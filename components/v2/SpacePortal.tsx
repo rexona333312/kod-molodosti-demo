@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
 import { Monogram } from "@/components/Logo";
-import { portalCards, brand, contacts } from "@/lib/content";
+import { useDict } from "@/components/LocaleProvider";
 
 // ---------------------------------------------------------------------------
 // Nav cards (the 4 real sections) sit on a ring; decorative cards float
@@ -15,20 +15,13 @@ import { portalCards, brand, contacts } from "@/lib/content";
 const NAV_RADIUS = 470;
 const DECO_RADIUS = 720;
 
-type NavCard = (typeof portalCards)[number] & {
-  base: number;
-  scatterY: number;
-  roll: number;
-};
-
+// keyed by stable card id — locale-independent
 const navLayout: Record<string, { base: number; scatterY: number; roll: number }> = {
   services: { base: 0, scatterY: -22, roll: -4 },
   specialists: { base: 90, scatterY: 28, roll: 5 },
   about: { base: 180, scatterY: -30, roll: 4 },
   contacts: { base: 270, scatterY: 22, roll: -5 },
 };
-
-const navCards: NavCard[] = portalCards.map((c) => ({ ...c, ...navLayout[c.id] }));
 
 const decoCards = [
   { base: 50, scatterY: -150, roll: 8, image: "/images/deco-1.jpg" },
@@ -37,6 +30,18 @@ const decoCards = [
 ];
 
 export function SpacePortal({ onEnter }: { onEnter: (target: string | null) => void }) {
+  const { portalCards, brand, contacts, ui } = useDict();
+  // labels by id, so the bottom menu picks up the active locale
+  const labelOf = useMemo(() => {
+    const m: Record<string, string> = {};
+    portalCards.forEach((c) => (m[c.id] = c.label));
+    return m;
+  }, [portalCards]);
+  const navCards = useMemo(
+    () => portalCards.map((c) => ({ ...c, ...navLayout[c.id] })),
+    [portalCards],
+  );
+
   const rootRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const worldRef = useRef<HTMLDivElement>(null);
@@ -223,7 +228,7 @@ export function SpacePortal({ onEnter }: { onEnter: (target: string | null) => v
       root.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("keydown", onKey);
     };
-  }, [onEnter]);
+  }, [onEnter, navCards]);
 
   const cardSize =
     "w-[clamp(140px,19vw,224px)] aspect-[3/4]";
@@ -270,7 +275,7 @@ export function SpacePortal({ onEnter }: { onEnter: (target: string | null) => v
                 key={c.id}
                 ref={(el) => { navRefs.current[i] = el; }}
                 onClick={() => enter(c.target)}
-                aria-label={`Открыть раздел «${c.label}»`}
+                aria-label={`${ui.portal.enterAriaPre}${c.label}${ui.portal.enterAriaPost}`}
                 className={`group absolute left-1/2 top-1/2 cursor-pointer ${cardSize}`}
                 style={{
                   transform: `translate(-50%,-50%) rotateY(${c.base}deg) translateZ(${NAV_RADIUS}px) translateY(${c.scatterY}px) rotateZ(${c.roll}deg)`,
@@ -294,12 +299,12 @@ export function SpacePortal({ onEnter }: { onEnter: (target: string | null) => v
       {/* ---- top UI ---- */}
       <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between px-5 py-5 md:px-9">
         <p className="v2-ui hidden text-[0.62rem] uppercase tracking-label text-muted sm:block">
-          Иваново · с {brand.since}
+          {brand.city} · {ui.portal.sinceLabel} {brand.since}
         </p>
         <div className="v2-ui flex flex-col items-center">
           <Monogram className="h-9 w-9 text-emerald" />
           <span className="mt-1 text-[0.55rem] uppercase tracking-wide2 text-muted">
-            Код Молодости
+            {brand.name}
           </span>
         </div>
         <a
@@ -314,53 +319,53 @@ export function SpacePortal({ onEnter }: { onEnter: (target: string | null) => v
       <div className="v2-ui pointer-events-none absolute inset-x-0 bottom-[236px] flex flex-col items-center gap-2 px-6 text-center sm:bottom-[160px]">
         {isTouch ? <SwipeGlyph /> : <WheelGlyph />}
         <p className="max-w-[80vw] text-[0.6rem] uppercase tracking-[0.16em] text-muted sm:text-[0.66rem] sm:tracking-label">
-          {isTouch ? "Проведите пальцем — выберите раздел" : "Листайте колёсиком — выберите раздел"}
+          {isTouch ? ui.portal.hintTouch : ui.portal.hintWheel}
         </p>
       </div>
 
       {/* ---- bottom menu: desktop scattered ---- */}
-      <nav className="absolute inset-x-0 bottom-9 z-10 hidden sm:block" aria-label="Навигация по разделам">
+      <nav className="absolute inset-x-0 bottom-9 z-10 hidden sm:block" aria-label={ui.portal.navAria}>
         <div className="relative mx-auto h-[92px] max-w-2xl px-4">
           <MenuItem className="absolute left-[8%] top-[44px] -rotate-2 text-lg md:text-2xl" active={front === 0} onClick={() => enter("services")}>
-            Услуги
+            {labelOf.services}
           </MenuItem>
           <MenuItem className="absolute left-[24%] top-[2px] rotate-1 text-lg md:text-2xl" active={front === 2} onClick={() => enter("about")}>
-            О клинике
+            {labelOf.about}
           </MenuItem>
           <MenuItem className="absolute right-[24%] top-[2px] -rotate-1 text-lg md:text-2xl" active={front === 1} onClick={() => enter("specialists")}>
-            Специалисты
+            {labelOf.specialists}
           </MenuItem>
           <MenuItem className="absolute right-[8%] top-[44px] rotate-2 text-lg md:text-2xl" active={front === 3} onClick={() => enter("contacts")}>
-            Контакты
+            {labelOf.contacts}
           </MenuItem>
           <button
             onClick={() => enter("booking")}
             className="v2-ui absolute left-1/2 top-[34px] -translate-x-1/2 cursor-pointer rounded-full bg-emerald px-7 py-3 text-xs uppercase tracking-label text-cream transition-colors duration-300 hover:bg-emerald-deep"
           >
-            Записаться
+            {ui.portal.book}
           </button>
         </div>
       </nav>
 
       {/* ---- bottom menu: mobile clean ---- */}
-      <nav className="absolute inset-x-0 bottom-7 z-10 px-6 sm:hidden" aria-label="Навигация по разделам">
+      <nav className="absolute inset-x-0 bottom-7 z-10 px-6 sm:hidden" aria-label={ui.portal.navAria}>
         <div className="flex flex-wrap items-center justify-center gap-x-7 gap-y-1">
-          <MenuItem className="px-1 py-1.5 text-xl" active={front === 0} onClick={() => enter("services")}>Услуги</MenuItem>
-          <MenuItem className="px-1 py-1.5 text-xl" active={front === 1} onClick={() => enter("specialists")}>Специалисты</MenuItem>
-          <MenuItem className="px-1 py-1.5 text-xl" active={front === 2} onClick={() => enter("about")}>О клинике</MenuItem>
-          <MenuItem className="px-1 py-1.5 text-xl" active={front === 3} onClick={() => enter("contacts")}>Контакты</MenuItem>
+          <MenuItem className="px-1 py-1.5 text-xl" active={front === 0} onClick={() => enter("services")}>{labelOf.services}</MenuItem>
+          <MenuItem className="px-1 py-1.5 text-xl" active={front === 1} onClick={() => enter("specialists")}>{labelOf.specialists}</MenuItem>
+          <MenuItem className="px-1 py-1.5 text-xl" active={front === 2} onClick={() => enter("about")}>{labelOf.about}</MenuItem>
+          <MenuItem className="px-1 py-1.5 text-xl" active={front === 3} onClick={() => enter("contacts")}>{labelOf.contacts}</MenuItem>
         </div>
         <button
           onClick={() => enter("booking")}
           className="v2-ui mt-4 w-full cursor-pointer rounded-full bg-emerald px-7 py-3.5 text-xs uppercase tracking-label text-cream transition-colors duration-300 hover:bg-emerald-deep"
         >
-          Записаться
+          {ui.portal.book}
         </button>
       </nav>
 
       {/* copyright corners */}
       <span className="v2-ui pointer-events-none absolute bottom-4 left-5 hidden text-[0.6rem] text-muted/70 md:block">
-        © {new Date().getFullYear()} Код Молодости
+        © {new Date().getFullYear()} {brand.name}
       </span>
     </div>
   );

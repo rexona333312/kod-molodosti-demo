@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Logo } from "./Logo";
 import { Menu, Close, MapPin } from "./Icons";
-import { nav, contacts } from "@/lib/content";
+import { useDict } from "./LocaleProvider";
 
 export function Header({
   onNavigate,
@@ -12,6 +12,7 @@ export function Header({
   onNavigate: (target: string) => void;
   onBook: () => void;
 }) {
+  const { nav, contacts, ui } = useDict();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -40,12 +41,12 @@ export function Header({
           <button
             onClick={() => go("top")}
             className="cursor-pointer text-ink transition-opacity hover:opacity-70"
-            aria-label="Код Молодости — на главную"
+            aria-label={ui.header.homeAria}
           >
             <Logo />
           </button>
 
-          <nav className="hidden items-center gap-9 lg:flex" aria-label="Основная навигация">
+          <nav className="hidden items-center gap-9 lg:flex" aria-label={ui.header.navAria}>
             {nav.map((item) => (
               <button
                 key={item.target}
@@ -59,21 +60,21 @@ export function Header({
 
           <div className="flex items-center gap-3">
             <a
-              href={`https://yandex.ru/maps/?text=${encodeURIComponent(contacts.address)}`}
+              href={`${ui.header.mapsHrefBase}${encodeURIComponent(contacts.address)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="hidden h-11 w-11 items-center justify-center rounded-full border border-ink/15 text-ink transition-colors duration-300 hover:border-emerald hover:text-emerald md:flex"
-              aria-label="Адрес на карте"
+              aria-label={ui.header.mapAria}
             >
               <MapPin />
             </a>
             <button onClick={onBook} className="btn-primary hidden sm:inline-flex">
-              Записаться
+              {ui.header.book}
             </button>
             <button
               onClick={() => setOpen(true)}
               className="flex h-11 w-11 items-center justify-center text-ink lg:hidden cursor-pointer"
-              aria-label="Открыть меню"
+              aria-label={ui.header.openMenu}
             >
               <Menu className="h-6 w-6" />
             </button>
@@ -94,13 +95,13 @@ export function Header({
             <button
               onClick={() => setOpen(false)}
               className="flex h-11 w-11 items-center justify-center text-ink cursor-pointer"
-              aria-label="Закрыть меню"
+              aria-label={ui.header.closeMenu}
             >
               <Close className="h-6 w-6" />
             </button>
           </div>
 
-          <nav className="mt-16 flex flex-col gap-7" aria-label="Мобильная навигация">
+          <nav className="mt-16 flex flex-col gap-7" aria-label={ui.header.mobileNavAria}>
             {nav.map((item, i) => (
               <button
                 key={item.target}
@@ -121,7 +122,7 @@ export function Header({
               }}
               className="btn-primary w-full"
             >
-              Записаться на приём
+              {ui.header.bookFull}
             </button>
             <a href={contacts.phoneHref} className="block text-center text-lg text-ink">
               {contacts.phone}

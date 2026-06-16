@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { contacts } from "@/lib/content";
 import { MapPin } from "./Icons";
+import { useDict } from "./LocaleProvider";
 
 /**
  * Click-to-load facade for the Yandex map. The heavy third-party iframe is
  * only mounted on user interaction, so it never blocks initial load / TBT.
  */
 export function MapEmbed() {
+  const { contacts, ui } = useDict();
   const [show, setShow] = useState(false);
 
   if (show) {
@@ -16,7 +17,7 @@ export function MapEmbed() {
       <div className="h-full min-h-[360px] overflow-hidden rounded-[2px] border border-line">
         <iframe
           src={contacts.mapSrc}
-          title="Карта — клиника «Код Молодости», ул. Сакко, 33, Иваново"
+          title={ui.map.iframeTitle}
           className="h-full min-h-[360px] w-full grayscale-[0.2]"
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
@@ -28,7 +29,7 @@ export function MapEmbed() {
   return (
     <button
       onClick={() => setShow(true)}
-      aria-label="Показать карту проезда"
+      aria-label={ui.map.aria}
       className="group relative flex h-full min-h-[360px] w-full cursor-pointer flex-col items-center justify-center gap-4 overflow-hidden rounded-[2px] border border-line bg-sage/50 transition-colors duration-300 hover:bg-sage/70"
     >
       {/* subtle map-grid texture */}
@@ -45,7 +46,7 @@ export function MapEmbed() {
       </span>
       <span className="relative font-display text-xl text-ink">{contacts.address}</span>
       <span className="relative rounded-full bg-emerald px-6 py-2.5 text-xs uppercase tracking-label text-cream transition-colors duration-300 group-hover:bg-emerald-deep">
-        Показать карту
+        {ui.map.showMap}
       </span>
     </button>
   );

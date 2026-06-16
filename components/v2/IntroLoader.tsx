@@ -2,15 +2,16 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Monogram } from "@/components/Logo";
-import { brand } from "@/lib/content";
-
-const VALUE = "Код Молодости";
+import { useDict } from "@/components/LocaleProvider";
 
 /**
  * Branded intro (~3.5s): the clinic name is "typed as code" — playing on
- * Код = code — then resolves from monospace into the elegant serif lockup.
+ * Код = code (RU) / { code: "Code of Youth" } (EN) — then resolves from
+ * monospace into the elegant serif lockup.
  */
 export function IntroLoader({ onDone }: { onDone: () => void }) {
+  const { brand, ui } = useDict();
+  const value = brand.name;
   const [typed, setTyped] = useState("");
   const [phase, setPhase] = useState<"typing" | "resolve">("typing");
   const done = useRef(false);
@@ -26,7 +27,7 @@ export function IntroLoader({ onDone }: { onDone: () => void }) {
     };
 
     if (reduce) {
-      setTyped(VALUE);
+      setTyped(value);
       setPhase("resolve");
       timers.push(setTimeout(finish, 1100));
       return () => timers.forEach(clearTimeout);
@@ -36,9 +37,9 @@ export function IntroLoader({ onDone }: { onDone: () => void }) {
     let i = 0;
     const step = () => {
       i += 1;
-      setTyped(VALUE.slice(0, i));
-      if (i < VALUE.length) {
-        timers.push(setTimeout(step, 110 + (VALUE[i - 1] === " " ? 80 : 0)));
+      setTyped(value.slice(0, i));
+      if (i < value.length) {
+        timers.push(setTimeout(step, 110 + (value[i - 1] === " " ? 80 : 0)));
       } else {
         timers.push(
           setTimeout(() => setPhase("resolve"), 650),
@@ -49,7 +50,7 @@ export function IntroLoader({ onDone }: { onDone: () => void }) {
     timers.push(setTimeout(step, 450));
 
     return () => timers.forEach(clearTimeout);
-  }, [onDone]);
+  }, [onDone, value]);
 
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center overflow-hidden bg-porcelain px-6">
@@ -61,7 +62,7 @@ export function IntroLoader({ onDone }: { onDone: () => void }) {
         aria-hidden={phase === "resolve"}
       >
         <span className="text-muted/70">{"{ "}</span>
-        <span className="text-emerald">код</span>
+        <span className="text-emerald">{ui.intro.codeKey}</span>
         <span className="text-muted/70">{" : "}</span>
         <span className="text-ink">
           &quot;{typed}

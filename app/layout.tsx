@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Prata, Inter } from "next/font/google";
 import { SITE_URL } from "@/lib/site";
-import { brand, contacts } from "@/lib/content";
+import { brand } from "@/lib/content";
 import "./globals.css";
 
 const display = Prata({
@@ -74,43 +74,9 @@ export const viewport: Viewport = {
   colorScheme: "light",
 };
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "MedicalClinic",
-  name: brand.name,
-  legalName: brand.legalName,
-  description,
-  url: SITE_URL,
-  image: ogImage,
-  telephone: contacts.phone,
-  email: contacts.email,
-  priceRange: "₽₽₽",
-  foundingDate: String(brand.since),
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: "ул. Сакко, 33",
-    addressLocality: "Иваново",
-    addressCountry: "RU",
-  },
-  geo: { "@type": "GeoCoordinates", latitude: 56.999, longitude: 40.974 },
-  areaServed: "Иваново",
-  medicalSpecialty: "DermatologicSurgery",
-  openingHoursSpecification: [
-    {
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-      opens: "09:00",
-      closes: "21:00",
-    },
-    {
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: ["Saturday", "Sunday"],
-      opens: "09:00",
-      closes: "19:00",
-    },
-  ],
-};
-
+// NOTE: JSON-LD structured data is injected per-route (see lib/schema.ts +
+// components/JsonLd.tsx) so the English /v3 can ship a Russia-free schema while
+// /, /v2 keep the original RU schema. It is intentionally NOT placed here.
 export default function RootLayout({
   children,
 }: {
@@ -120,10 +86,6 @@ export default function RootLayout({
     <html lang="ru" className={`${display.variable} ${body.variable}`}>
       <body className="bg-porcelain font-sans text-ink antialiased">
         {children}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
       </body>
     </html>
   );

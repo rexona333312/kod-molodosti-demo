@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { services } from "@/lib/content";
 import { Plus, ArrowRight } from "./Icons";
+import { useDict } from "./LocaleProvider";
 
 export function Services({ onBook }: { onBook: () => void }) {
+  const { services, ui } = useDict();
   const [open, setOpen] = useState<string | null>(services[0].id);
 
   return (
@@ -12,16 +13,15 @@ export function Services({ onBook }: { onBook: () => void }) {
       <div className="mx-auto max-w-site px-5 md:px-10">
         <div className="reveal flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
-            <p className="label-eyebrow">Услуги</p>
+            <p className="label-eyebrow">{ui.services.eyebrow}</p>
             <h2 className="mt-6 font-display text-[clamp(2.2rem,5vw,3.6rem)] leading-[1.05] text-ink">
-              Шесть направлений
+              {ui.services.titleTop}
               <br />
-              эстетической медицины
+              {ui.services.titleBottom}
             </h2>
           </div>
           <p className="max-w-sm text-[0.95rem] leading-relaxed text-muted">
-            От лазерной эпиляции до контурной пластики — индивидуальный протокол
-            подбирает врач на консультации.
+            {ui.services.intro}
           </p>
         </div>
 
@@ -89,11 +89,9 @@ export function Services({ onBook }: { onBook: () => void }) {
         </div>
 
         <div className="reveal mt-10 flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
-          <p className="text-xs text-muted/80">
-            * Цены указаны ориентировочно. Точную стоимость уточняйте у администратора.
-          </p>
+          <p className="text-xs text-muted/80">{ui.services.priceNote}</p>
           <button onClick={onBook} className="btn-primary">
-            Подобрать процедуру
+            {ui.services.cta}
             <ArrowRight className="h-4 w-4" />
           </button>
         </div>

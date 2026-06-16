@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { services } from "@/lib/content";
 import { ArrowRight, Check } from "./Icons";
+import { useDict } from "./LocaleProvider";
 
 type Status = "idle" | "loading" | "success" | "error";
 
 export function BookingForm() {
+  const { services, ui } = useDict();
+  const t = ui.booking;
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
 
@@ -17,7 +19,7 @@ export function BookingForm() {
     const data = Object.fromEntries(new FormData(form).entries());
 
     if (!data.consent) {
-      setError("Необходимо согласие на обработку персональных данных.");
+      setError(t.errConsent);
       return;
     }
 
@@ -33,7 +35,7 @@ export function BookingForm() {
       form.reset();
     } catch {
       setStatus("error");
-      setError("Не удалось отправить заявку. Позвоните нам по телефону.");
+      setError(t.errSend);
     }
   }
 
@@ -43,14 +45,13 @@ export function BookingForm() {
         <div className="grid gap-14 lg:grid-cols-12">
           <div className="lg:col-span-5">
             <p className="reveal text-[0.72rem] uppercase tracking-label text-cream/70">
-              Запись
+              {t.eyebrow}
             </p>
             <h2 className="reveal mt-6 font-display text-[clamp(2.2rem,5vw,3.6rem)] leading-[1.05]">
-              Оставьте заявку — мы перезвоним
+              {t.title}
             </h2>
             <p className="reveal mt-7 max-w-md text-lg leading-relaxed text-cream/75">
-              Администратор свяжется с вами, подберёт удобное время и ответит на
-              вопросы о процедурах и подготовке.
+              {t.subtitle}
             </p>
           </div>
 
@@ -60,37 +61,34 @@ export function BookingForm() {
                 <span className="flex h-14 w-14 items-center justify-center rounded-full border border-cream/40">
                   <Check className="h-7 w-7" />
                 </span>
-                <h3 className="font-display text-3xl">Заявка отправлена</h3>
-                <p className="max-w-md text-cream/75">
-                  Спасибо! Мы свяжемся с вами в ближайшее время в рабочие часы
-                  клиники.
-                </p>
+                <h3 className="font-display text-3xl">{t.successTitle}</h3>
+                <p className="max-w-md text-cream/75">{t.successBody}</p>
                 <button
                   onClick={() => setStatus("idle")}
                   className="mt-2 text-sm uppercase tracking-label text-cream/80 underline-offset-4 hover:underline cursor-pointer"
                 >
-                  Отправить ещё одну
+                  {t.sendAnother}
                 </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="reveal grid gap-7 sm:grid-cols-2" noValidate>
                 <div className="flex flex-col gap-2">
                   <label htmlFor="name" className="text-xs uppercase tracking-label text-cream/60">
-                    Имя
+                    {t.labelName}
                   </label>
                   <input
                     id="name"
                     name="name"
                     required
                     autoComplete="name"
-                    placeholder="Как к вам обращаться"
+                    placeholder={t.phName}
                     className="field-input border-cream/25 text-cream placeholder:text-cream/40 focus:border-cream"
                   />
                 </div>
 
                 <div className="flex flex-col gap-2">
                   <label htmlFor="phone" className="text-xs uppercase tracking-label text-cream/60">
-                    Телефон
+                    {t.labelPhone}
                   </label>
                   <input
                     id="phone"
@@ -98,14 +96,14 @@ export function BookingForm() {
                     type="tel"
                     required
                     autoComplete="tel"
-                    placeholder="+7 (___) ___-__-__"
+                    placeholder={t.phPhone}
                     className="field-input border-cream/25 text-cream placeholder:text-cream/40 focus:border-cream"
                   />
                 </div>
 
                 <div className="flex flex-col gap-2 sm:col-span-2">
                   <label htmlFor="service" className="text-xs uppercase tracking-label text-cream/60">
-                    Направление
+                    {t.labelService}
                   </label>
                   <select
                     id="service"
@@ -114,7 +112,7 @@ export function BookingForm() {
                     className="field-input border-cream/25 bg-emerald-deep text-cream focus:border-cream"
                   >
                     <option value="" className="text-ink">
-                      Выберите направление (необязательно)
+                      {t.servicePlaceholder}
                     </option>
                     {services.map((s) => (
                       <option key={s.id} value={s.title} className="text-ink">
@@ -126,13 +124,13 @@ export function BookingForm() {
 
                 <div className="flex flex-col gap-2 sm:col-span-2">
                   <label htmlFor="message" className="text-xs uppercase tracking-label text-cream/60">
-                    Комментарий
+                    {t.labelMessage}
                   </label>
                   <textarea
                     id="message"
                     name="message"
                     rows={3}
-                    placeholder="Удобное время, вопросы, пожелания"
+                    placeholder={t.phMessage}
                     className="field-input resize-none border-cream/25 text-cream placeholder:text-cream/40 focus:border-cream"
                   />
                 </div>
@@ -144,11 +142,11 @@ export function BookingForm() {
                     className="mt-1 h-4 w-4 shrink-0 cursor-pointer accent-cream"
                   />
                   <span>
-                    Я согласен(а) на обработку персональных данных в соответствии с{" "}
-                    <a href="/privacy" className="underline underline-offset-2 hover:text-cream">
-                      политикой конфиденциальности
+                    {t.consentPre}
+                    <a href={ui.privacyHref} className="underline underline-offset-2 hover:text-cream">
+                      {t.consentLink}
                     </a>
-                    .
+                    {t.consentPost}
                   </span>
                 </label>
 
@@ -164,7 +162,7 @@ export function BookingForm() {
                     disabled={status === "loading"}
                     className="inline-flex items-center justify-center gap-2 rounded-full bg-cream px-8 py-4 text-sm uppercase tracking-label text-emerald-deep transition-all duration-300 hover:bg-white disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
                   >
-                    {status === "loading" ? "Отправляем…" : "Отправить заявку"}
+                    {status === "loading" ? t.submitting : t.submit}
                     {status !== "loading" && <ArrowRight className="h-4 w-4" />}
                   </button>
                 </div>

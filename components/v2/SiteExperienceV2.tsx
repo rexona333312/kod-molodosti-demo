@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import { LocaleProvider } from "@/components/LocaleProvider";
+import type { Locale } from "@/lib/i18n";
 import { IntroLoader } from "./IntroLoader";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
@@ -23,7 +25,7 @@ const SpacePortal = dynamic(
 const HEADER_OFFSET = 88;
 type Phase = "intro" | "portal" | "site";
 
-export function SiteExperienceV2() {
+export function SiteExperienceV2({ locale = "ru" }: { locale?: Locale }) {
   const [phase, setPhase] = useState<Phase>("intro");
 
   useEffect(() => {
@@ -79,7 +81,7 @@ export function SiteExperienceV2() {
   }, [phase]);
 
   return (
-    <>
+    <LocaleProvider locale={locale}>
       {phase === "intro" && <IntroLoader onDone={() => setPhase("portal")} />}
       {phase === "portal" && <SpacePortal onEnter={handleEnter} />}
 
@@ -94,6 +96,6 @@ export function SiteExperienceV2() {
       </main>
       <Footer onNavigate={scrollToId} />
       {phase === "site" && <CookieConsent />}
-    </>
+    </LocaleProvider>
   );
 }

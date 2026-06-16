@@ -1,6 +1,8 @@
+"use client";
+
 import Image from "next/image";
-import { brand, heroImage } from "@/lib/content";
 import { ArrowRight, ArrowDown } from "./Icons";
+import { useDict } from "./LocaleProvider";
 
 export function Hero({
   onBook,
@@ -9,6 +11,7 @@ export function Hero({
   onBook: () => void;
   onNavigate: (t: string) => void;
 }) {
+  const { brand, heroImage, ui } = useDict();
   return (
     <section
       id="top"
@@ -19,9 +22,9 @@ export function Hero({
           <p className="reveal label-eyebrow">{brand.type}</p>
 
           <h1 className="reveal mt-6 font-display text-[clamp(3rem,8.5vw,7rem)] leading-[0.92] text-ink">
-            Код
+            {ui.hero.titleTop}
             <br />
-            <span className="italic text-emerald">Молодости</span>
+            <span className="italic text-emerald">{ui.hero.titleAccent}</span>
           </h1>
 
           <p className="reveal mt-8 max-w-xl text-lg leading-relaxed text-muted md:text-xl">
@@ -30,11 +33,11 @@ export function Hero({
 
           <div className="reveal mt-10 flex flex-wrap items-center gap-4">
             <button onClick={onBook} className="btn-primary">
-              Записаться на приём
+              {ui.hero.bookCta}
               <ArrowRight className="h-4 w-4" />
             </button>
             <button onClick={() => onNavigate("services")} className="btn-ghost">
-              Смотреть услуги
+              {ui.hero.servicesCta}
             </button>
           </div>
 
@@ -43,16 +46,14 @@ export function Hero({
               <span className="font-display text-2xl text-ink">
                 {new Date().getFullYear() - brand.since}+
               </span>{" "}
-              лет&nbsp;опыта
+              {ui.hero.statYears}
             </span>
             <span className="h-8 w-px bg-line" />
             <span>
-              <span className="font-display text-2xl text-ink">6</span> направлений
+              <span className="font-display text-2xl text-ink">6</span> {ui.hero.statAreas}
             </span>
             <span className="h-8 w-px bg-line" />
-            <span className="max-w-[12rem] leading-snug">
-              Медицинская лицензия
-            </span>
+            <span className="max-w-[12rem] leading-snug">{ui.hero.statLicense}</span>
           </div>
         </div>
 
@@ -61,15 +62,15 @@ export function Hero({
             <div className="relative aspect-[4/5] overflow-hidden rounded-[2px]">
               <Image
                 src={heroImage}
-                alt="Процедура в клинике медицинской косметологии «Код Молодости»"
+                alt={ui.hero.imgAlt}
                 fill
                 sizes="(max-width: 1024px) 100vw, 40vw"
                 className="object-cover"
               />
             </div>
             <div className="absolute -bottom-5 -left-5 hidden border border-line bg-cream px-6 py-4 md:block">
-              <p className="text-xs uppercase tracking-label text-muted">Иваново</p>
-              <p className="mt-1 font-display text-lg text-ink">ул. Сакко, 33</p>
+              <p className="text-xs uppercase tracking-label text-muted">{brand.city}</p>
+              <p className="mt-1 font-display text-lg text-ink">{ui.hero.cardStreet}</p>
             </div>
           </div>
         </div>

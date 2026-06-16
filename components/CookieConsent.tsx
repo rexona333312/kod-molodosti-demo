@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useDict } from "./LocaleProvider";
 
 const STORAGE_KEY = "km-cookie-consent";
 
 export function CookieConsent() {
+  const { ui } = useDict();
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -33,22 +35,21 @@ export function CookieConsent() {
     <div className="fixed inset-x-3 bottom-3 z-[60] md:inset-x-auto md:right-6 md:bottom-6 md:max-w-md">
       <div className="rounded-[3px] border border-line bg-cream/95 p-5 shadow-[0_18px_50px_-20px_rgba(0,0,0,0.3)] backdrop-blur-md">
         <p className="text-sm leading-relaxed text-graphite">
-          Мы используем cookie, чтобы сайт работал корректно. Продолжая
-          пользоваться сайтом, вы соглашаетесь с{" "}
-          <a href="/privacy" className="text-emerald underline underline-offset-2">
-            политикой конфиденциальности
+          {ui.cookie.pre}
+          <a href={ui.privacyHref} className="text-emerald underline underline-offset-2">
+            {ui.cookie.link}
           </a>
-          .
+          {ui.cookie.post}
         </p>
         <div className="mt-4 flex items-center gap-4">
           <button onClick={accept} className="btn-primary px-6 py-2.5 text-xs">
-            Принять
+            {ui.cookie.accept}
           </button>
           <button
             onClick={() => setShow(false)}
             className="text-xs uppercase tracking-label text-muted hover:text-ink cursor-pointer"
           >
-            Закрыть
+            {ui.cookie.close}
           </button>
         </div>
       </div>

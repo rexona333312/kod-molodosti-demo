@@ -1,0 +1,13 @@
+{
+  "name": "Code of Youth — Medical Cosmetology Clinic",
+  "short_name": "Code of Youth",
+  "description": "Premium aesthetic medicine. Book your consultation online.",
+  "start_url": "/v3",
+  "display": "standalone",
+  "background_color": "#F6F4EF",
+  "theme_color": "#F6F4EF",
+  "lang": "en",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
